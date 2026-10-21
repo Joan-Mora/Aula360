@@ -1,4 +1,5 @@
 node_modules
+crm/
 .next
 .env
 .env.local

@@ -48,23 +48,33 @@ async function postMessage(body: unknown) {
 export async function sendTemplate(to: string, studentName: string, teacherName: string) {
   const template = process.env.WHATSAPP_TEMPLATE_NAME || "aula360_acompanamiento";
   const language = process.env.WHATSAPP_TEMPLATE_LANG || "es";
+  const declared = process.env.WHATSAPP_TEMPLATE_PARAMS;
+  const paramCount = declared === undefined || declared === "" ? 2 : Number(declared);
+  const values = [studentName, teacherName]
+    .slice(0, Number.isInteger(paramCount) && paramCount > 0 ? paramCount : 0)
+    .map((text) => text.replace(/[\r\n\t]+/g, " ").trim())
+    .filter(Boolean);
+  const message: {
+    name: string;
+    language: { code: string };
+    components?: { type: string; parameters: { type: string; text: string }[] }[];
+  } = {
+    name: template,
+    language: { code: language },
+  };
+  if (values.length > 0) {
+    message.components = [
+      {
+        type: "body",
+        parameters: values.map((text) => ({ type: "text", text })),
+      },
+    ];
+  }
   return postMessage({
     messaging_product: "whatsapp",
     to: whatsappTo(to),
     type: "template",
-    template: {
-      name: template,
-      language: { code: language },
-      components: [
-        {
-          type: "body",
-          parameters: [
-            { type: "text", text: studentName },
-            { type: "text", text: teacherName },
-          ],
-        },
-      ],
-    },
+    template: message,
   });
 }
 

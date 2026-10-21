@@ -15,6 +15,7 @@ type Failure = { ok: false; errors: SheetError[] };
 
 export function IngestForm() {
   const [pending, setPending] = useState(false);
+  const [fileName, setFileName] = useState("");
   const [result, setResult] = useState<Success | Failure | null>(null);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -43,12 +44,19 @@ export function IngestForm() {
 
   return (
     <form className="drop" onSubmit={onSubmit}>
-      <label>
-        Archivo .xlsx
-        <input name="archivo" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
+      <label className="file-picker">
+        <span className="ghost">Elegir documento</span>
+        <span className="file-name">{fileName || "Ningún documento seleccionado"}</span>
+        <input
+          name="archivo"
+          type="file"
+          accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          required
+          onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")}
+        />
       </label>
       <button className="solid" type="submit" disabled={pending}>
-        {pending ? "Validando" : "Cargar fotografía"}
+        {pending ? "Validando" : "Subir documento"}
       </button>
       {result && !result.ok ? (
         <div className="error" style={{ marginTop: 16 }}>

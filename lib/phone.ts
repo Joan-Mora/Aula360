@@ -12,5 +12,7 @@ export function phonesMatch(left: string, right: string) {
 }
 
 export function whatsappTo(value: string) {
-  return digits(value);
+  const phone = digits(value);
+  if (phone.length === 10) return `57${phone}`;
+  return phone;
 }

@@ -270,13 +270,65 @@ textarea { min-height: 90px; resize: vertical; }
 }
 
 .drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
   border: 1.5px dashed var(--mineral);
   border-radius: 24px;
   padding: 22px;
   background: rgba(255, 253, 248, 0.8);
 }
+.drop .error,
+.drop .ok { flex-basis: 100%; }
+.file-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  flex: 1 1 280px;
+  cursor: pointer;
+}
+.file-picker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.file-picker .ghost {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  background: var(--paper-2);
+}
+.file-picker:focus-within .ghost {
+  outline: 2px solid var(--mineral);
+  outline-offset: 2px;
+}
+.file-name {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 22px; }
 
+.finder {
+  display: grid;
+  gap: 6px;
+  margin-top: 18px;
+  font-weight: 600;
+}
+.finder input {
+  width: min(100%, 32rem);
+  min-height: 44px;
+}
+.stack { display: grid; gap: 12px; }
 .thread { display: grid; gap: 8px; margin: 16px 0; }
 .bubble {
   max-width: 70%;

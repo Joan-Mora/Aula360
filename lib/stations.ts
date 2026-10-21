@@ -13,6 +13,7 @@ export function stationsFor(role: Role): Station[] {
       { href: "/observatorio", label: "Observatorio", hint: "Riesgo de toda la cohorte", icon: "/brand/icon-observatorio.jpg" },
       { href: "/ingesta", label: "Ingesta", hint: "La única puerta del Excel", icon: null },
       { href: "/reportes", label: "Reportes", hint: "PDF y Excel", icon: "/brand/icon-reportes.jpg" },
+      { href: "/mensajes", label: "Mensajes", hint: "WhatsApp y la bandeja", icon: "/brand/icon-mensajes.jpg" },
       { href: "/alertas", label: "Alertas", hint: "Avisos de alto y crítico", icon: null },
     ];
   }
