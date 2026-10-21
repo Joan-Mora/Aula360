@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  BIENESTAR
+  DOCENTE
+  ESTUDIANTE
+}
+
+enum RiskBand {
+  BAJO
+  MEDIO
+  ALTO
+  CRITICO
+}
+
+model User {
+  id                 String                 @id @default(cuid())
+  email              String                 @unique
+  passwordHash       String
+  role               Role
+  name               String
+  phone              String?
+  active             Boolean                @default(true)
+  mustChangePassword Boolean                @default(false)
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  sessions           Session[]
+  uploads            UploadBatch[]
+  studentProfile     Student?               @relation("StudentAccount")
+  taught             Student[]              @relation("DocenteAccount")
+  sessionsHeld       ClassSession[]
+  assignments        Assignment[]
+  alerts             Alert[]
+  conversations      WhatsAppConversation[] @relation("DocenteConversation")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  email     String
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+}
+
+model UploadBatch {
+  id           String             @id @default(cuid())
+  filename     String
+  uploadedById String
+  uploadedBy   User               @relation(fields: [uploadedById], references: [id])
+  rowCount     Int
+  createdCount Int
+  updatedCount Int
+  createdAt    DateTime           @default(now())
+  snapshots    AcademicSnapshot[]
+}
+
+model Student {
+  id            String                 @id @default(cuid())
+  codigo        String                 @unique
+  nombres       String
+  apellidos     String
+  correo        String
+  telefono      String
+  programa      String
+  semestre      Int
+  curso         String?
+  grupo         String                 @default("")
+  docenteNombre String
+  docenteCorreo String
+  userId        String?                @unique
+  user          User?                  @relation("StudentAccount", fields: [userId], references: [id])
+  docenteUserId String?
+  docente       User?                  @relation("DocenteAccount", fields: [docenteUserId], references: [id])
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  snapshots     AcademicSnapshot[]
+  marks         AttendanceMark[]
+  submissions   Submission[]
+  alerts        Alert[]
+  conversations WhatsAppConversation[]
+
+  @@index([docenteUserId])
+  @@index([programa])
+  @@index([correo])
+  @@index([telefono])
+}
+
+model AcademicSnapshot {
+  id                      String      @id @default(cuid())
+  studentId               String
+  student                 Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  uploadId                String
+  upload                  UploadBatch @relation(fields: [uploadId], references: [id])
+  porcentajeAsistencia    Float
+  evaluacionesProgramadas Int
+  evaluacionesPresentadas Int
+  evaluacionesPerdidas    Int
+  promedioAcumulado       Float
+  materiasReprobadas      Int
+  semanasSinAsistencia    Int
+  riskScore               Int
+  riskBand                RiskBand
+  factors                 Json
+  baseActions             Json
+  aiNarrative             String?
+  aiFactors               Json?
+  aiActions               Json?
+  aiShouldNotify          Boolean     @default(false)
+  aiNotifyReason          String?
+  aiFailed                Boolean     @default(false)
+  notified                Boolean     @default(false)
+  createdAt               DateTime    @default(now())
+
+  @@index([studentId, createdAt])
+  @@index([riskBand])
+  @@index([uploadId])
+}
+
+model Alert {
+  id          String    @id @default(cuid())
+  studentId   String
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  snapshotId  String?
+  recipientId String?
+  recipient   User?     @relation(fields: [recipientId], references: [id], onDelete: SetNull)
+  roleTarget  Role
+  channel     String
+  title       String
+  body        String
+  status      String
+  createdAt   DateTime  @default(now())
+  readAt      DateTime?
+
+  @@index([recipientId, createdAt])
+  @@index([studentId])
+}
+
+model ClassSession {
+  id            String           @id @default(cuid())
+  curso         String
+  grupo         String           @default("")
+  title         String
+  heldOn        DateTime
+  docenteUserId String
+  docente       User             @relation(fields: [docenteUserId], references: [id])
+  marks         AttendanceMark[]
+  createdAt     DateTime         @default(now())
+
+  @@index([docenteUserId, curso, grupo])
+}
+
+model AttendanceMark {
+  id        String       @id @default(cuid())
+  sessionId String
+  session   ClassSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  studentId String
+  student   Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  present   Boolean
+
+  @@unique([sessionId, studentId])
+}
+
+model Assignment {
+  id            String       @id @default(cuid())
+  curso         String
+  grupo         String       @default("")
+  title         String
+  description   String
+  dueAt         DateTime?
+  docenteUserId String
+  docente       User         @relation(fields: [docenteUserId], references: [id])
+  submissions   Submission[]
+  createdAt     DateTime     @default(now())
+
+  @@index([docenteUserId, curso, grupo])
+}
+
+model Submission {
+  id            String     @id @default(cuid())
+  assignmentId  String
+  assignment    Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId     String
+  student       Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  cloudinaryUrl String
+  publicId      String
+  filename      String
+  createdAt     DateTime   @default(now())
+
+  @@index([assignmentId])
+  @@index([studentId])
+}
+
+model WhatsAppConversation {
+  id              String            @id @default(cuid())
+  studentId       String
+  student         Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  phone           String
+  humanHandoff    Boolean           @default(false)
+  handoffUntil    DateTime?
+  docenteUserId   String?
+  docente         User?             @relation("DocenteConversation", fields: [docenteUserId], references: [id])
+  windowExpiresAt DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  messages        WhatsAppMessage[]
+
+  @@index([phone])
+  @@index([studentId])
+}
+
+model WhatsAppMessage {
+  id             String               @id @default(cuid())
+  conversationId String
+  conversation   WhatsAppConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  direction      String
+  author         String
+  body           String
+  waMessageId    String?
+  createdAt      DateTime             @default(now())
+
+  @@index([conversationId, createdAt])
+}

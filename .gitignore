@@ -1,0 +1,14 @@
+node_modules
+.next
+.env
+.env.local
+.env.*.local
+dist
+coverage
+*.log
+npm-debug.log*
+tsconfig.tsbuildinfo
+.DS_Store
+Thumbs.db
+IMG_*.jpg
+*.xlsx.tmp

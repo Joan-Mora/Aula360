@@ -1,0 +1,42 @@
+{
+  "name": "aula360",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build && node scripts/prepare-standalone.js",
+    "start": "node .next/standalone/server.js",
+    "test": "vitest run",
+    "seed": "tsx prisma/seed.ts",
+    "samples": "tsx scripts/build-samples.ts",
+    "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.0.2",
+    "@prisma/client": "^6.16.2",
+    "@react-three/drei": "^10.7.4",
+    "@react-three/fiber": "^9.3.0",
+    "cloudinary": "^2.7.0",
+    "exceljs": "^4.4.0",
+    "next": "^15.5.4",
+    "pdfkit": "^0.17.2",
+    "prisma": "^6.16.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "recharts": "^2.15.4",
+    "three": "^0.180.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@types/pdfkit": "^0.17.3",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "vitest": "^3.2.4"
+  }
+}
