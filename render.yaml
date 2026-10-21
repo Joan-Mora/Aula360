@@ -5,6 +5,7 @@ services:
     plan: free
     region: oregon
     buildCommand: npm install && npx prisma migrate deploy && npm run seed && npm run build
+    startCommand: npm start
     healthCheckPath: /api/health
     envVars:
       - key: HOSTNAME

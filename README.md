@@ -48,6 +48,7 @@ El usuario de semilla sale de `SEED_BIENESTAR_EMAIL` y `SEED_BIENESTAR_PASSWORD`
 - El plan gratis se suspende tras 15 minutos sin tráfico. Para evitarlo, configura UptimeRobot por tu cuenta contra `https://<servicio>.onrender.com/api/health` cada 5 minutos. Este repositorio no guarda credenciales de UptimeRobot.
 - Un servicio free encendido todo el mes usa cerca de 750 horas. Si la cuenta tiene otro servicio free, el cupo se comparte.
 - La base gratis caduca a los 30 días. Hay que crear otra y volver a cargar el Excel: el archivo sigue siendo la fuente de verdad.
+- Render permite una sola base Postgres gratis por cuenta. Si ya hay otra, este blueprint no puede crear `aula360-db` hasta liberar ese cupo. No hay que apuntar Aula 360 a una base de otro proyecto.
 - Los secretos van en el panel de Render (`sync: false`). Después del primer despliegue define `APP_URL` con la URL pública `https://...onrender.com` para que los correos muestren el logo.
 - El build ejecuta `prisma migrate deploy`. El predeploy ejecuta `npm run seed`.
 
